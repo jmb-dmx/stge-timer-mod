@@ -67,7 +67,36 @@ try {
     console.error("Could not load logo.json", e);
 }
 
+const settingsFile = path.join(__dirname, 'settings.json');
+let settings = {
+    lang: 'en', // 'en' or 'fr'
+    bgColor: '#000000',
+    timerColor: '#22c55e',
+    warnColor: '#f97316',
+    dangerColor: '#ef4444',
+    warnTime: 120, // seconds
+    msgBgColor: '#ffffff',
+    msgTextColor: '#000000'
+};
+
+try {
+    if (fs.existsSync(settingsFile)) {
+        settings = Object.assign(settings, JSON.parse(fs.readFileSync(settingsFile, 'utf8')));
+    } else {
+        fs.writeFileSync(settingsFile, JSON.stringify(settings));
+    }
+} catch (e) {
+    console.error("Could not load settings.json", e);
+}
+
+function saveSettings() {
+    try { fs.writeFileSync(settingsFile, JSON.stringify(settings)); }
+    catch (e) { console.error("Could not save settings.json", e); }
+}
+
+
 // --- APP STATE ---
+
 let state = {
     timeLeft: 600,
     initialTime: 600,
@@ -78,8 +107,10 @@ let state = {
     ip: netInfo.ip,
     netmask: netInfo.mask,
     logoData: logoData,
-    blink_state: false
+    blink_state: false,
+    settings: settings
 };
+
 
 // --- GLOBAL TICK ENGINES ---
 // Standard Timer Tick (1 Second)
@@ -295,7 +326,22 @@ app.get('/api/system/wifi/static', (req, res) => {
     res.send('IP Configured');
 });
 
+
+// --- SETTINGS ENDPOINT ---
+app.post('/api/system/settings', (req, res) => {
+    if (req.body) {
+        settings = Object.assign(settings, req.body);
+        saveSettings();
+        state.settings = settings;
+        broadcast();
+        res.send('Settings Updated');
+    } else {
+        res.status(400).send('No Settings Data Received');
+    }
+});
+
 // Editable Quick Messages Endpoints
+
 app.get('/api/messages', (req, res) => res.json(quickMessages));
 
 app.get('/api/messages/add', (req, res) => {

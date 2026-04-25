@@ -87,7 +87,7 @@
     
     <div id="msg-container">
         <div class="message-box">
-            <span class="message-label">Control Message</span>
+            <span class="message-label" id="msg-label">Control Message</span>
             <span id="msg-text" class="message-text"></span>
         </div>
     </div>
@@ -108,6 +108,24 @@
 
         socket.on('stateUpdate', (state) => {
             currentMode = state.mode;
+
+            if (state.settings) {
+                document.documentElement.style.setProperty('--bg', state.settings.bgColor);
+                document.documentElement.style.setProperty('--text', state.settings.timerColor);
+                document.documentElement.style.setProperty('--warn', state.settings.warnColor);
+                document.documentElement.style.setProperty('--danger', state.settings.dangerColor);
+                document.querySelector('.message-box').style.backgroundColor = state.settings.msgBgColor;
+                document.querySelector('.message-box').style.color = state.settings.msgTextColor;
+
+                if (state.settings.lang === 'fr') {
+                    document.getElementById('msg-label').innerText = 'Message de contrôle';
+                    if (document.getElementById('clock').innerText === 'EVENT LOGO') document.getElementById('clock').innerText = 'LOGO D\'ÉVÉNEMENT';
+                } else {
+                    document.getElementById('msg-label').innerText = 'Control Message';
+                    if (document.getElementById('clock').innerText === 'LOGO D\'ÉVÉNEMENT') document.getElementById('clock').innerText = 'EVENT LOGO';
+                }
+            }
+
 
             if (state.ip && !ipOverlay.dataset.hidden) {
                 ipOverlay.innerText = "IP: " + state.ip;
@@ -142,7 +160,7 @@
                 } else {
                     logoDisplay.style.display = 'none';
                     document.getElementById('clock-container').style.display = 'flex';
-                    clock.innerText = "EVENT LOGO";
+                    clock.innerText = state.settings && state.settings.lang === 'fr' ? "LOGO D'ÉVÉNEMENT" : "EVENT LOGO";
                     clock.style.fontSize = "12vw";
                     clock.style.opacity = "0.5";
                 }
@@ -166,7 +184,7 @@
 
                 if (state.mode === 'countdown') {
                     if (state.timeLeft <= 0) document.body.classList.add('state-danger');
-                    else if (state.timeLeft <= 120) document.body.classList.add('state-warn');
+                    else if (state.timeLeft <= (state.settings && state.settings.warnTime ? state.settings.warnTime : 120)) document.body.classList.add('state-warn');
                 }
 
                 if (state.mode === 'countdown') {

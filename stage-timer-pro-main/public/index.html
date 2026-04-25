@@ -106,6 +106,45 @@
                 <button onclick="closeSettings()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;">×</button>
             </div>
             
+
+            <div class="sys-group">
+                <h3>Appearance & Language</h3>
+                <div class="sys-row" style="margin-bottom: 15px;">
+                    <select id="sys-lang" class="sys-input" onchange="saveAppearanceSettings()">
+                        <option value="en">Language: English</option>
+                        <option value="fr">Langue: Français</option>
+                    </select>
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Bg Color</label>
+                    <input type="color" id="sys-bg-color" class="sys-input" style="flex:0; width:50px; padding:0; height:30px;" onchange="saveAppearanceSettings()">
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Timer Color</label>
+                    <input type="color" id="sys-timer-color" class="sys-input" style="flex:0; width:50px; padding:0; height:30px;" onchange="saveAppearanceSettings()">
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Warning Color</label>
+                    <input type="color" id="sys-warn-color" class="sys-input" style="flex:0; width:50px; padding:0; height:30px;" onchange="saveAppearanceSettings()">
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Danger Color</label>
+                    <input type="color" id="sys-danger-color" class="sys-input" style="flex:0; width:50px; padding:0; height:30px;" onchange="saveAppearanceSettings()">
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Warning Time (sec)</label>
+                    <input type="number" id="sys-warn-time" class="sys-input" style="flex:1;" onchange="saveAppearanceSettings()">
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Msg Bg Color</label>
+                    <input type="color" id="sys-msg-bg-color" class="sys-input" style="flex:0; width:50px; padding:0; height:30px;" onchange="saveAppearanceSettings()">
+                </div>
+                <div class="sys-row" style="margin-bottom: 10px;">
+                    <label style="flex:1; font-size:12px; display:flex; align-items:center;">Msg Text Color</label>
+                    <input type="color" id="sys-msg-text-color" class="sys-input" style="flex:0; width:50px; padding:0; height:30px;" onchange="saveAppearanceSettings()">
+                </div>
+            </div>
+
             <div class="sys-group">
                 <h3>Wi-Fi Connection</h3>
                 <div class="sys-row">
@@ -290,6 +329,211 @@
     </div>
 
     <script>
+
+        function saveAppearanceSettings() {
+            const settings = {
+                lang: document.getElementById('sys-lang').value,
+                bgColor: document.getElementById('sys-bg-color').value,
+                timerColor: document.getElementById('sys-timer-color').value,
+                warnColor: document.getElementById('sys-warn-color').value,
+                dangerColor: document.getElementById('sys-danger-color').value,
+                warnTime: parseInt(document.getElementById('sys-warn-time').value) || 120,
+                msgBgColor: document.getElementById('sys-msg-bg-color').value,
+                msgTextColor: document.getElementById('sys-msg-text-color').value
+            };
+            fetch('/api/system/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            });
+            applyTranslations(settings.lang);
+        }
+
+        let initialSettingsLoaded = false;
+
+        const translations = {
+            'en': {
+                'title': 'Moderator Control | Stage Timer Pro',
+                'sys-title': 'SYSTEM SETTINGS',
+                'app-lang': 'Appearance & Language',
+                'wifi-conn': 'Wi-Fi Connection',
+                'scan-net': 'SCAN NETWORKS',
+                'static-ip': 'Static IP (For Current Wi-Fi)',
+                'apply-static': 'APPLY STATIC',
+                'revert-dhcp': 'REVERT TO DHCP',
+                'ap-fallback': 'Access Point (Fallback)',
+                'turn-on-ap': 'TURN ON AP',
+                'turn-off-ap': 'TURN OFF AP',
+                'sys-mgmt': 'System Management',
+                'set-btn': 'SET',
+                'pull-fw': 'PULL FIRMWARE UPDATE (GIT)',
+                'sys-restart-title': 'SYSTEM RESTART',
+                'sys-restart-desc': 'Are you sure you want to restart the Stage Timer service?',
+                'cancel': 'CANCEL',
+                'restart': 'RESTART',
+                'mod-title': 'Moderator',
+                'audio-off': '🔕 AUDIO OFF',
+                'settings': '⚙️ SETTINGS',
+                'live-monitor': 'Live Monitor',
+                'msg-preview': 'MESSAGE PREVIEW',
+                'display-mode': 'Display Mode',
+                'countdown': 'COUNTDOWN',
+                'countup': 'COUNT UP',
+                'time-of-day': 'TIME OF DAY',
+                'event-logo': 'EVENT LOGO',
+                'timer-controls': 'Timer Controls',
+                'start': 'START',
+                'pause': 'PAUSE',
+                'reset': 'RESET',
+                'plus-min': '+ 1 MIN',
+                'minus-min': '- 1 MIN',
+                'preset-times': 'Preset Times',
+                'custom-time': 'Custom Time',
+                'stage-message': 'Stage Message',
+                'msg-placeholder': 'Type message here...',
+                'set-message': 'SET MESSAGE',
+                'show-message': 'SHOW MESSAGE',
+                'hide-message': 'HIDE MESSAGE',
+                'quick-msg': 'Quick Message Bank (Instant Live)',
+                'save': '+ SAVE',
+                'logo-upload': 'Event Logo Upload',
+                'upload-logo': 'UPLOAD LOGO',
+                'bg-color': 'Bg Color',
+                'timer-color': 'Timer Color',
+                'warn-color': 'Warning Color',
+                'danger-color': 'Danger Color',
+                'warn-time': 'Warning Time (sec)',
+                'msg-bg-color': 'Msg Bg Color',
+                'msg-text-color': 'Msg Text Color'
+            },
+            'fr': {
+                'title': 'Contrôle Modérateur | Stage Timer Pro',
+                'sys-title': 'PARAMÈTRES SYSTÈME',
+                'app-lang': 'Apparence & Langue',
+                'wifi-conn': 'Connexion Wi-Fi',
+                'scan-net': 'SCANNER RÉSEAUX',
+                'static-ip': 'IP statique (Pour le Wi-Fi actuel)',
+                'apply-static': 'APPLIQUER STATIQUE',
+                'revert-dhcp': 'REVENIR À DHCP',
+                'ap-fallback': 'Point d\'accès (Secours)',
+                'turn-on-ap': 'ACTIVER AP',
+                'turn-off-ap': 'DÉSACTIVER AP',
+                'sys-mgmt': 'Gestion du système',
+                'set-btn': 'DÉFINIR',
+                'pull-fw': 'METTRE À JOUR FIRMWARE (GIT)',
+                'sys-restart-title': 'REDÉMARRAGE DU SYSTÈME',
+                'sys-restart-desc': 'Êtes-vous sûr de vouloir redémarrer le service Stage Timer ?',
+                'cancel': 'ANNULER',
+                'restart': 'REDÉMARRER',
+                'mod-title': 'Modérateur',
+                'audio-off': '🔕 AUDIO DÉSACTIVÉ',
+                'settings': '⚙️ PARAMÈTRES',
+                'live-monitor': 'Moniteur en direct',
+                'msg-preview': 'APERÇU DU MESSAGE',
+                'display-mode': 'Mode d\'affichage',
+                'countdown': 'COMPTE À REBOURS',
+                'countup': 'CHRONOMÈTRE',
+                'time-of-day': 'HEURE DU JOUR',
+                'event-logo': 'LOGO D\'ÉVÉNEMENT',
+                'timer-controls': 'Contrôles du minuteur',
+                'start': 'DÉMARRER',
+                'pause': 'PAUSE',
+                'reset': 'RÉINITIALISER',
+                'plus-min': '+ 1 MIN',
+                'minus-min': '- 1 MIN',
+                'preset-times': 'Temps prédéfinis',
+                'custom-time': 'Temps personnalisé',
+                'stage-message': 'Message sur scène',
+                'msg-placeholder': 'Tapez le message ici...',
+                'set-message': 'DÉFINIR MESSAGE',
+                'show-message': 'AFFICHER MESSAGE',
+                'hide-message': 'MASQUER MESSAGE',
+                'quick-msg': 'Messages rapides (Direct instantané)',
+                'save': '+ ENREGISTRER',
+                'logo-upload': 'Téléchargement de logo',
+                'upload-logo': 'TÉLÉCHARGER LOGO',
+                'bg-color': 'Couleur Fond',
+                'timer-color': 'Couleur Minuteur',
+                'warn-color': 'Couleur Avert.',
+                'danger-color': 'Couleur Danger',
+                'warn-time': 'Temps Avert. (sec)',
+                'msg-bg-color': 'Coul. Fond Msg',
+                'msg-text-color': 'Coul. Texte Msg'
+            }
+        };
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            document.title = t['title'];
+            document.querySelector('.modal-title').childNodes[0].nodeValue = t['sys-title'] + ' ';
+            document.querySelectorAll('h3')[0].innerText = t['app-lang'];
+            document.querySelectorAll('h3')[1].innerText = t['wifi-conn'];
+            document.querySelector('button[onclick="scanWifi()"]').innerText = t['scan-net'];
+            document.querySelectorAll('h3')[2].innerText = t['static-ip'];
+            document.querySelector('button[onclick="setStaticIP()"]').innerText = t['apply-static'];
+            document.querySelector('button[onclick="setAutoIP()"]').innerText = t['revert-dhcp'];
+            document.querySelectorAll('h3')[3].innerText = t['ap-fallback'];
+            document.querySelector('button[onclick="toggleAP(\'on\')"]').innerText = t['turn-on-ap'];
+            document.querySelector('button[onclick="toggleAP(\'down\')"]').innerText = t['turn-off-ap'];
+            document.querySelectorAll('h3')[4].innerText = t['sys-mgmt'];
+            document.querySelector('button[onclick="setHostname()"]').innerText = t['set-btn'];
+            document.querySelector('button[onclick="updateFirmware()"]').innerText = t['pull-fw'];
+            document.querySelector('#restart-modal h3').innerText = t['sys-restart-title'];
+            document.querySelector('#restart-modal p').innerText = t['sys-restart-desc'];
+            document.querySelector('button[onclick="document.getElementById(\'restart-modal\').classList.remove(\'active\')"]').innerText = t['cancel'];
+            document.querySelector('button[onclick="confirmRestart()"]').childNodes[0].nodeValue = t['restart'];
+
+            document.querySelector('header div span').innerText = t['mod-title'];
+            document.getElementById('btn-audio').innerText = t['audio-off'];
+            document.querySelector('button[onclick="openSettings()"]').innerText = t['settings'];
+            document.querySelector('button[onclick="document.getElementById(\'restart-modal\').classList.add(\'active\')"]').innerText = t['restart'];
+
+            document.querySelectorAll('.card h2')[0].innerText = t['live-monitor'];
+            document.querySelector('.msg-preview div').innerText = t['msg-preview'];
+            document.querySelectorAll('.card h2')[1].innerText = t['display-mode'];
+            document.getElementById('mode-countdown').innerText = t['countdown'];
+            document.getElementById('mode-countup').innerText = t['countup'];
+            document.getElementById('mode-timeofday').innerText = t['time-of-day'];
+            document.getElementById('mode-logo').innerText = t['event-logo'];
+
+            document.querySelectorAll('.card h2')[2].innerText = t['timer-controls'];
+            document.getElementById('b-start').childNodes[1].innerText = t['start'];
+            document.getElementById('b-pause').childNodes[1].innerText = t['pause'];
+            document.getElementById('b-reset').childNodes[1].innerText = t['reset'];
+            document.querySelector('button[onclick="api(\'add\', 60)"]').innerText = t['plus-min'];
+            document.querySelector('button[onclick="api(\'add\', -60)"]').innerText = t['minus-min'];
+
+            document.querySelectorAll('.card h2')[3].innerText = t['preset-times'];
+            document.querySelectorAll('.card h2')[4].innerText = t['custom-time'];
+            document.querySelector('button[onclick="setCustom()"]').innerText = t['set-btn'];
+
+            document.querySelectorAll('.card h2')[5].innerText = t['stage-message'];
+            document.getElementById('minput').placeholder = t['msg-placeholder'];
+            document.querySelector('button[onclick="setMessage()"]').innerText = t['set-message'];
+            const toggleBtn = document.getElementById('btn-toggle');
+            if (toggleBtn.innerText === 'SHOW MESSAGE' || toggleBtn.innerText === 'AFFICHER MESSAGE') toggleBtn.innerText = t['show-message'];
+            else toggleBtn.innerText = t['hide-message'];
+
+            document.querySelectorAll('.card h2')[6].innerText = t['quick-msg'];
+            document.querySelector('button[onclick="addQuickMessage()"]').innerText = t['save'];
+
+            document.querySelectorAll('.card h2')[7].innerText = t['logo-upload'];
+            document.querySelector('button[onclick="document.getElementById(\'logo-input\').click()"]').innerText = t['upload-logo'];
+
+            const labels = document.querySelectorAll('.sys-group label');
+            if (labels.length >= 8) {
+                labels[0].innerText = t['bg-color'];
+                labels[1].innerText = t['timer-color'];
+                labels[2].innerText = t['warn-color'];
+                labels[3].innerText = t['danger-color'];
+                labels[4].innerText = t['warn-time'];
+                labels[5].innerText = t['msg-bg-color'];
+                labels[6].innerText = t['msg-text-color'];
+            }
+        }
+
         const socket = io();
 
         // Audio Cues Logic
@@ -442,6 +686,26 @@
 
         socket.on('stateUpdate', s => {
             document.getElementById('ip-display').innerText = s.ip;
+
+            if (s.settings && !initialSettingsLoaded) {
+                document.getElementById('sys-lang').value = s.settings.lang || 'en';
+                document.getElementById('sys-bg-color').value = s.settings.bgColor || '#000000';
+                document.getElementById('sys-timer-color').value = s.settings.timerColor || '#22c55e';
+                document.getElementById('sys-warn-color').value = s.settings.warnColor || '#f97316';
+                document.getElementById('sys-danger-color').value = s.settings.dangerColor || '#ef4444';
+                document.getElementById('sys-warn-time').value = s.settings.warnTime || 120;
+                document.getElementById('sys-msg-bg-color').value = s.settings.msgBgColor || '#ffffff';
+                document.getElementById('sys-msg-text-color').value = s.settings.msgTextColor || '#000000';
+                applyTranslations(s.settings.lang || 'en');
+                initialSettingsLoaded = true;
+            }
+            if (s.settings) {
+                const warnTime = s.settings.warnTime || 120;
+                const mTimeColor = s.mode === 'countdown' ? (s.timeLeft <= 0 ? (s.blink_state ? '#000000' : s.settings.dangerColor) : (s.timeLeft <= warnTime ? s.settings.warnColor : s.settings.timerColor)) : s.settings.timerColor;
+                document.getElementById('m-time').style.color = mTimeColor;
+                if (s.mode === 'timeofday' || s.mode === 'logo') document.getElementById('m-time').style.color = s.settings.timerColor;
+            }
+
             document.getElementById('current-ip-info').innerText = `Current Interface: ${s.ip} (Netmask: ${s.netmask || 'N/A'})`;
             
             // Audio trigger on exact cross of 0
@@ -464,22 +728,18 @@
             if (s.mode === 'logo') {
                 monitorTime.classList.add('hidden');
                 if (s.logoData) monitorLogo.classList.remove('hidden');
-                else { monitorTime.innerText = "IDLE"; monitorTime.style.color = '#22c55e'; monitorTime.classList.remove('hidden'); }
+                else { monitorTime.innerText = "IDLE"; monitorTime.classList.remove('hidden'); }
             } else {
                 monitorTime.classList.remove('hidden');
                 monitorLogo.classList.add('hidden');
                 
                 if (s.mode === 'timeofday') { 
                     monitorTime.innerText = new Date().toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit'}); 
-                    monitorTime.style.color = '#22c55e';
+                    // managed by settings
                 } else {
                     const abs = Math.abs(s.timeLeft);
                     monitorTime.innerText = (s.timeLeft < 0 ? "-" : "") + Math.floor(abs/60).toString().padStart(2,'0') + ":" + (abs%60).toString().padStart(2,'0');
-                    if (s.mode === 'countdown') {
-                        if (s.timeLeft <= 0) monitorTime.style.color = s.blink_state ? '#000000' : '#ef4444';
-                        else if (s.timeLeft <= 120) monitorTime.style.color = '#f97316'; 
-                        else monitorTime.style.color = '#22c55e';
-                    } else monitorTime.style.color = '#22c55e';
+
                 }
             }
             
@@ -487,8 +747,11 @@
             const badge = document.getElementById('msg-badge');
             const toggleBtn = document.getElementById('btn-toggle');
             
-            if(s.showMessage) { badge.innerText = "LIVE ON STAGE"; badge.className = "msg-status-badge status-live"; toggleBtn.innerText = "HIDE MESSAGE"; toggleBtn.className = "btn btn-toggle btn-toggle-on"; } 
-            else { badge.innerText = "OFF AIR"; badge.className = "msg-status-badge status-off"; toggleBtn.innerText = "SHOW MESSAGE"; toggleBtn.className = "btn btn-toggle btn-toggle-off"; }
+
+            const t = translations[s.settings ? s.settings.lang : 'en'] || translations['en'];
+            if(s.showMessage) { badge.innerText = "LIVE ON STAGE"; badge.className = "msg-status-badge status-live"; toggleBtn.innerText = t['hide-message']; toggleBtn.className = "btn btn-toggle btn-toggle-on"; }
+            else { badge.innerText = "OFF AIR"; badge.className = "msg-status-badge status-off"; toggleBtn.innerText = t['show-message']; toggleBtn.className = "btn btn-toggle btn-toggle-off"; }
+
 
             document.getElementById('b-start').classList.toggle('hidden', s.isRunning);
             document.getElementById('b-pause').classList.toggle('hidden', !s.isRunning);

@@ -7,7 +7,7 @@ echo "  Stage Timer Pro - Automated Deployment"
 echo "================================================="
 
 # --- CONFIGURATION ---
-REPO_URL="https://github.com/ondrejvysek/stage-timer-pro.git"
+REPO_URL="https://github.com/jmb-dmx/stge-timer-mod.git"
 CURRENT_USER=$(whoami)
 APP_DIR="$HOME/stage-timer"
 

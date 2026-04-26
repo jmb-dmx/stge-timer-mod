@@ -13,7 +13,7 @@ APP_DIR="$HOME/stage-timer"
 
 echo -e "\n[1/8] Updating system and installing dependencies..."
 sudo apt update
-sudo apt install -y git nodejs npm chromium xserver-xorg x11-xserver-utils xinit openbox network-manager fonts-dejavu fonts-liberation fonts-roboto plymouth plymouth-themes imagemagick
+sudo apt install -y git nodejs npm chromium-browser xserver-xorg x11-xserver-utils xinit openbox network-manager fonts-dejavu fonts-liberation fonts-roboto plymouth plymouth-themes imagemagick
 
 echo -e "\n[2/8] Configuring Auto-Fallback Wi-Fi Hotspot..."
 sudo nmcli connection delete "StageTimer_Fallback" 2>/dev/null

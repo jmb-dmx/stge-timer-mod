@@ -11,36 +11,51 @@ REPO_URL="https://github.com/jmb-dmx/stge-timer-mod.git"
 CURRENT_USER=$(whoami)
 APP_DIR="$HOME/stage-timer"
 
-echo -e "\n[1/7] Updating system and installing dependencies..."
+echo -e "\n[1/8] Updating system and installing dependencies..."
 sudo apt update
 sudo apt install -y git nodejs npm chromium xserver-xorg x11-xserver-utils xinit openbox network-manager fonts-dejavu fonts-liberation fonts-roboto plymouth plymouth-themes imagemagick
 
-echo -e "\n[2/7] Configuring Auto-Fallback Wi-Fi Hotspot..."
+echo -e "\n[2/8] Configuring Auto-Fallback Wi-Fi Hotspot..."
 sudo nmcli connection delete "StageTimer_Fallback" 2>/dev/null
 sudo nmcli connection add type wifi ifname wlan0 con-name "StageTimer_Fallback" autoconnect yes ssid StageTimer_AP
 sudo nmcli connection modify "StageTimer_Fallback" 802-11-wireless.mode ap 802-11-wireless.band bg ipv4.method shared
 sudo nmcli connection modify "StageTimer_Fallback" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "stageadmin"
 sudo nmcli connection modify "StageTimer_Fallback" connection.autoconnect-priority -10
 
-echo -e "\n[3/7] Automating OS Autologin..."
+echo -e "\n[3/8] Automating OS Autologin..."
 # Enable Console Autologin (Boot option B2)
 sudo raspi-config nonint do_boot_behaviour B2
 
-echo -e "\n[4/7] Setting up user permissions..."
+echo -e "\n[4/8] Setting up user permissions..."
 sudo usermod -a -G video,render,input,tty $CURRENT_USER
 
-echo -e "\n[5/7] Downloading latest code from Git..."
+echo -e "\n[5/8] Downloading latest code from Git..."
 if [ -d "$APP_DIR" ]; then
     sudo rm -rf "$APP_DIR"
 fi
 git clone "$REPO_URL" "$APP_DIR"
 cd "$APP_DIR"
 
-echo -e "\n[6/7] Installing Node App Dependencies..."
+echo -e "\n[6/8] Installing Node App Dependencies..."
 npm install
 chmod +x "$APP_DIR/start-timer.sh"
 
-echo -e "\n[7/7] Setting up Plymouth Boot Splash & Node Service..."
+echo -e "\n[7/8] Installing Bitfocus Companion module..."
+# Create the developer directory and copy the pre-built files
+sudo mkdir -p /opt/companion-module-dev/stage-timer-pro
+sudo cp -r "$APP_DIR/companion/stage-timer/"* /opt/companion-module-dev/stage-timer-pro/
+
+# Navigate into the new module folder and install base module
+cd /opt/companion-module-dev/stage-timer-pro
+sudo npm install @companion-module/base@^1.14.1
+
+# Fix folder ownership so the Companion background service can read it
+sudo chown -R companion:companion /opt/companion-module-dev/stage-timer-pro
+
+# Restart Companion service
+sudo systemctl restart companion || true
+
+echo -e "\n[8/8] Setting up Plymouth Boot Splash & Node Service..."
 # Create a seamless boot splash
 THEME_DIR="/usr/share/plymouth/themes/stagetimer"
 sudo mkdir -p "$THEME_DIR"
